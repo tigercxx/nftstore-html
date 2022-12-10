@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<form>
+    <label> Name: <input type="text" /> </label>
+    <label> Image: <input type="file" /> </label>
+    <div>
+        <button type="submit">Store</button>
+    </div>
+</form>
+<pre id="out"></pre>
+<script type="module">
+    document.querySelector("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const nameEl = document.querySelector('input[type="text"]');
+        if (!nameEl.value) return log("Missing name");
+        const fileEl = document.querySelector('input[type="file"]');
+        if (!fileEl.files.length) return log("No files selected");
+        const formData = new FormData();
+        formData.append("name", nameEl.value);
+        console.log(fileEl.files[0]);
+        formData.append("file", fileEl.files[0]);
+        // May need include error handling https://blog.logrocket.com/multer-nodejs-express-upload-file/
+        const response = await fetch("http://localhost:3000/upload_article", {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+            },
+            body: formData,
+        });
+        const data = await response.json();
+        // redirects to link with file stored
+        window.open(`${data.link}`);
+    });
+</script>
